@@ -1,13 +1,23 @@
 import React, {Component} from 'react';
 // instead of importing the container from material-ui
 import {Grid, Button, TextField, FormControl, InputLabel, Select, MenuItem, Box, NativeSelect} from "@material-ui/core";
+import {setQuizType, setUserName} from "../actions";
+import {connect} from "react-redux";
+import {Link} from "react-router-dom";
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setUserNames: (name) => dispatch(setUserName(name)),
+        setQuizTypes: (type) => dispatch(setQuizType(type)),
+    }
+}
 
 class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            quizType: '20',
-            userName: ''
+            quizType: 1,
+            userName: '',
         };
         this.startQuiz = this.startQuiz.bind(this);
         this.handleChangeName = this.handleChangeName.bind(this);
@@ -31,6 +41,8 @@ class Home extends Component {
 
     startQuiz()
     {
+        this.props.setUserNames(this.state.userName)
+        this.props.setQuizTypes(this.state.quizType)
         this.props.handleStartQuiz(this.state);
     }
 
@@ -61,18 +73,19 @@ class Home extends Component {
                            <Select
                                labelId="label"
                                fullWidth
-                               id="select"
-                               value={this.state.quizType}
                                onChange={this.handleQuizTypeChanged}
+                               value={this.props.quizzes[this.state.quizType - 1].id}
                            >
-                               <MenuItem value="10">Ten</MenuItem>
-                               <MenuItem value="20">Twenty</MenuItem>
+                               {this.props.quizzes.map(quiz => <MenuItem key={quiz.id} value={quiz.id}>{quiz.quizType}</MenuItem>)}
                            </Select>
                        </Box>
                     </Grid>
                     <Grid item xs={12} >
                        <Box sx={{ m: "1rem" }}>
-                           <Button href="/quiz" variant="contained" onClick={this.startQuiz}>START</Button>
+                           <Link to={{pathname: "/quiz",}}>
+                               <Button variant="contained" onClick={this.startQuiz}>START</Button>
+                           </Link>
+
                        </Box>
                     </Grid>
                 </Grid>
@@ -81,4 +94,4 @@ class Home extends Component {
     }
 }
 
-export default Home;
+export default connect(null, mapDispatchToProps)(Home);
