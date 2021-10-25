@@ -1,25 +1,52 @@
-import logo from './logo.svg';
+import React, {Component} from 'react';
 import './App.css';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Quiz from "./components/Quiz";
+import Home from "./components/Home";
+import QuizResult from "./components/QuizResult";
+
+class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: '',
+            selectedQuiz: ''
+        }
+        this.handleStartQuiz = this.handleStartQuiz.bind(this);
+    }
+
+    handleStartQuiz({userName, quizType}){
+        console.log(userName, quizType);
+        this.setState({
+            name: userName,
+            selectedQuiz: quizType
+        });
+
+    }
+
+    render() {
+        return (
+            <Router>
+                <div className="App">
+                    <Route path="/" exact>
+                        <Home
+                            handleStartQuiz={this.handleStartQuiz}
+                        />
+                    </Route>
+                    <Route path="/quiz">
+                        <Quiz name={this.state.name} quizeType={this.state.selectedQuiz} />
+                    </Route>
+                    <Route path="/result" component={QuizResult} />
+                </div>
+            </Router>
+        );
+    }
 }
 
 export default App;
