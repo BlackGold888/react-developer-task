@@ -8,7 +8,7 @@ module.exports =
                 host: 'localhost',
                 user: 'root',
                 password: '',
-                database: 'results'
+                database: 'tech_task'
             });
 
             this.handle.connect(function (err) {
@@ -36,10 +36,10 @@ module.exports =
             });
         },
         saveResult: function (data) {
-            let queryStr = "INSERT INTO results (user, correct_ans,count_questions, quizType) VALUES (?,?,?)"
+            let queryStr = "INSERT INTO results (user, correct_ans,count_questions, quizType) VALUES (?,?,?,?)"
             this.handle.query(queryStr, [data.userName, data.rightAnswers, data.questionLength, data.quizType], function (err, result) {
                 if (err) throw err;
-                console.log(`\x1b[92m[MySQL] \x1b[97mResult ${result.length} \x1b[39m`);
+                console.log(`\x1b[92m[MySQL] \x1b[97mUser results has been saved \x1b[39m`);
             });
         }
     };

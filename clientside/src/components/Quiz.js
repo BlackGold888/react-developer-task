@@ -33,7 +33,7 @@ class Quiz extends Component {
         this.handleAnswer = this.handleAnswer.bind(this);
     }
 
-    handleAnswer(isCorrect){
+   async handleAnswer(isCorrect){
         if (isCorrect) {
             this.setState((state, props) => ({
                 rightAnswers: state.rightAnswers + 1
@@ -55,13 +55,16 @@ class Quiz extends Component {
                 quizType: this.props.data.quizType
             }
 
-            fetch('/save', {
+            fetch(`/save`, {
                 method: 'POST',
                 headers: {
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(temp)
+                body: JSON.stringify(temp),
             })
+                .then(response => response.json())
+                .then(response => console.log(response))
 
             this.props.setQuizResult(data);
             this.setState({
