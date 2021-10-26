@@ -2,11 +2,19 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import { Button, Grid} from "@material-ui/core";
 import {Redirect} from "react-router";
+import {setQuizType, setUserName, setQuizResult} from "../actions";
+
 
 
 const mapStateToProps = (props) => {
     return {
         data: props
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setQuizResult: (data) => dispatch(setQuizResult(data)),
     }
 }
 
@@ -17,7 +25,9 @@ class Quiz extends Component {
             currentQuestion: 0,
             rightAnswers: 0,
             selectedQuiz: null,
-            showResult: false
+            showResult: false,
+            redirect: false
+
         }
         this.renderSelectedQuiz = this.renderSelectedQuiz.bind(this);
         this.handleAnswer = this.handleAnswer.bind(this);
@@ -31,17 +41,38 @@ class Quiz extends Component {
         }
 
         let selectedQuiz = this.renderSelectedQuiz();
-        console.log(selectedQuiz)
+
         if (this.state.currentQuestion + 1 > selectedQuiz.questions.length - 1) {
-            // window.location.replace("/");
-            return <Redirect to={{pathname: '/'}} push/>
+            let data = {
+                rightAnswers: this.state.rightAnswers,
+                questionLength: selectedQuiz.questions.length
+            }
+
+            let temp = {
+                userName: this.props.data.userName,
+                rightAnswers: this.state.rightAnswers,
+                questionLength: selectedQuiz.questions.length,
+                quizType: this.props.data.quizType
+            }
+
+            fetch('/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(temp)
+            })
+
+            this.props.setQuizResult(data);
+            this.setState({
+                redirect: true
+            })
+
         }else{
             this.setState((state, props) => ({
                 currentQuestion: state.currentQuestion + 1
             }))
         }
-        console.log(this.state.currentQuestion)
-
     }
 
     renderSelectedQuiz()
@@ -51,7 +82,10 @@ class Quiz extends Component {
 
     render() {
         const selectedQuiz = this.renderSelectedQuiz();
-
+        console.log(JSON.stringify(this.props))
+        if (this.state.redirect) {
+            return <Redirect to='/result' />
+        }
         return (
             <>
                 <Grid
@@ -84,4 +118,4 @@ class Quiz extends Component {
     }
 }
 
-export default connect(mapStateToProps)(Quiz);
+export default connect(mapStateToProps,mapDispatchToProps)(Quiz);

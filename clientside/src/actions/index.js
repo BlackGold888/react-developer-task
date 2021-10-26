@@ -11,3 +11,11 @@ export const setQuizType = (quizType) => {
         quizType: quizType
     }
 }
+
+export const setQuizResult = (data) =>{
+    return{
+        type: "QUIZ_RESULT",
+        rightAnswers: data.rightAnswers,
+        questionLength: data.questionLength
+    }
+}

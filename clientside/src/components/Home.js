@@ -4,6 +4,9 @@ import {Grid, Button, TextField, FormControl, InputLabel, Select, MenuItem, Box,
 import {setQuizType, setUserName} from "../actions";
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {Redirect} from "react-router";
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -18,6 +21,7 @@ class Home extends Component {
         this.state = {
             quizType: 1,
             userName: '',
+            redirect: false
         };
         this.startQuiz = this.startQuiz.bind(this);
         this.handleChangeName = this.handleChangeName.bind(this);
@@ -41,12 +45,31 @@ class Home extends Component {
 
     startQuiz()
     {
-        this.props.setUserNames(this.state.userName)
-        this.props.setQuizTypes(this.state.quizType)
-        this.props.handleStartQuiz(this.state);
+        if (this.state.userName.length < 3 || this.state.userName.length > 12) {
+            return toast.error('Min name length 3 and Max 12!', {
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+            });
+        }else{
+            this.props.setUserNames(this.state.userName);
+            this.props.setQuizTypes(this.state.quizType)
+            this.props.handleStartQuiz(this.state);
+            this.setState({
+                redirect: true
+            })
+        }
     }
 
     render() {
+        if (this.state.redirect) {
+            return <Redirect to={"/quiz"} />
+        }
+
         return (
             <>
                 <Grid
@@ -63,9 +86,10 @@ class Home extends Component {
                     <Grid item xs={12}>
                         <TextField
                             id="outlined-basic"
-                            label="Please enter your name"
+                            label="Enter your name"
                             variant="outlined"
                             onChange={this.handleChangeName}
+                            min={3}
                         />
                     </Grid>
                     <Grid item xs={12} >
@@ -82,12 +106,20 @@ class Home extends Component {
                     </Grid>
                     <Grid item xs={12} >
                        <Box sx={{ m: "1rem" }}>
-                           <Link to={{pathname: "/quiz",}}>
-                               <Button variant="contained" onClick={this.startQuiz}>START</Button>
-                           </Link>
-
+                           <Button variant="contained" onClick={this.startQuiz}>START</Button>
                        </Box>
                     </Grid>
+                    <ToastContainer
+                        position="bottom-center"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                    />
                 </Grid>
             </>
         );
